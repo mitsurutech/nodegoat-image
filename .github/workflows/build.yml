@@ -1,10 +1,10 @@
-# Builds the image for amd64 and arm64 and pushes it to ghcr.io/mitsurutech/nodegoat.
+# Builds the image for amd64 and arm64 and pushes it to ghcr.io/mitsurutech/owasp-nodegoat.
 #
 # A GitHub-hosted runner on purpose: this repository is public, and a self-hosted runner on a
 # public repository would run whatever a pull request asked it to. Pull requests build and do
 # not push; only a push to main (or a manual run) publishes. The tag is NodeGoat's version and
 # the first seven characters of the pinned commit, so a lab pins
-# `ghcr.io/mitsurutech/nodegoat:<version>-<commit>@sha256:<digest>`.
+# `ghcr.io/mitsurutech/owasp-nodegoat:<version>-<commit>@sha256:<digest>`.
 name: build
 
 on:
@@ -52,8 +52,8 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: ${{ github.event_name != 'pull_request' }}
           provenance: false
-          tags: ghcr.io/mitsurutech/nodegoat:${{ steps.version.outputs.value }}
+          tags: ghcr.io/mitsurutech/owasp-nodegoat:${{ steps.version.outputs.value }}
 
       - name: Check the site's code and its dependencies are in place
-        run: docker run --rm --platform linux/amd64 --entrypoint node "ghcr.io/mitsurutech/nodegoat:${{ steps.version.outputs.value }}" -e "require('/home/node/app/node_modules/mongodb'); require('/home/node/app/node_modules/express'); console.log('ok')"
+        run: docker run --rm --platform linux/amd64 --entrypoint node "ghcr.io/mitsurutech/owasp-nodegoat:${{ steps.version.outputs.value }}" -e "require('/home/node/app/node_modules/mongodb'); require('/home/node/app/node_modules/express'); console.log('ok')"
         if: github.event_name != 'pull_request'

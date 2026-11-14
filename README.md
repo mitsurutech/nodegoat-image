@@ -1,6 +1,6 @@
 # OWASP NodeGoat container image: a deliberately vulnerable Node.js app, built from source
 
-A multi-architecture Docker image of **OWASP NodeGoat**, the Node.js and Express web application that is insecure on purpose, for learning the OWASP Top 10 in a Node.js code base: server-side JavaScript injection, NoSQL injection in MongoDB, broken authentication and sessions, cross-site scripting, insecure direct object references, missing access control, CSRF, vulnerable components, an open redirect and ReDoS. It is published at **`ghcr.io/mitsurutech/nodegoat`** for `linux/amd64` and `linux/arm64`.
+A multi-architecture Docker image of **OWASP NodeGoat**, the Node.js and Express web application that is insecure on purpose, for learning the OWASP Top 10 in a Node.js code base: server-side JavaScript injection, NoSQL injection in MongoDB, broken authentication and sessions, cross-site scripting, insecure direct object references, missing access control, CSRF, vulnerable components, an open redirect and ReDoS. It is published at **`ghcr.io/mitsurutech/owasp-nodegoat`** for `linux/amd64` and `linux/arm64`.
 
 > **NodeGoat is vulnerable by design.** Run it only on a machine and a network you control, never publish its port to the internet, and never put real data in it.
 
@@ -16,10 +16,10 @@ NodeGoat needs **MongoDB 4.4**: its database driver (`mongodb` 2.2) speaks a wir
 ```sh
 docker network create nodegoat
 docker run -d --name mongo --network nodegoat mongo:4.4.29
-docker run -d --name nodegoat --network nodegoat -p 127.0.0.1:4000:4000 ghcr.io/mitsurutech/nodegoat:1.3.0-c5cb68a
+docker run -d --name nodegoat --network nodegoat -p 127.0.0.1:4000:4000 ghcr.io/mitsurutech/owasp-nodegoat:1.3.0-c5cb68a
 ```
 
-Then open http://127.0.0.1:4000/ and sign in as `user1` with the password `User1_123` (or `admin` / `Admin_123`). `MONGODB_URI` (default `mongodb://mongo:27017/nodegoat`) and `PORT` (default `4000`) change where it looks and listens. Pin the image by digest in anything that matters, for example a lab's compose file: `ghcr.io/mitsurutech/nodegoat:1.3.0-c5cb68a@sha256:<digest>`.
+Then open http://127.0.0.1:4000/ and sign in as `user1` with the password `User1_123` (or `admin` / `Admin_123`). `MONGODB_URI` (default `mongodb://mongo:27017/nodegoat`) and `PORT` (default `4000`) change where it looks and listens. Pin the image by digest in anything that matters, for example a lab's compose file: `ghcr.io/mitsurutech/owasp-nodegoat:1.3.0-c5cb68a@sha256:<digest>`.
 
 ## Where it is used
 
