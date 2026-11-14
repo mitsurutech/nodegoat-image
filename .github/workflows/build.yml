@@ -1,0 +1,59 @@
+# Builds the image for amd64 and arm64 and pushes it to ghcr.io/mitsurutech/nodegoat.
+#
+# A GitHub-hosted runner on purpose: this repository is public, and a self-hosted runner on a
+# public repository would run whatever a pull request asked it to. Pull requests build and do
+# not push; only a push to main (or a manual run) publishes. The tag is NodeGoat's version and
+# the first seven characters of the pinned commit, so a lab pins
+# `ghcr.io/mitsurutech/nodegoat:<version>-<commit>@sha256:<digest>`.
+name: build
+
+on:
+  # Only a change to what goes into the image rebuilds it, so editing the README never moves a
+  # tag; a change to this workflow alone is built with a manual run.
+  push:
+    branches: [main]
+    paths: [Dockerfile, SHA256SUMS, nodegoat-start]
+  pull_request:
+    paths: [Dockerfile, SHA256SUMS, nodegoat-start, .github/workflows/build.yml]
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Read the tag from the Dockerfile
+        id: version
+        run: |
+          version=$(sed -n 's/^ARG NODEGOAT_VERSION=//p' Dockerfile)
+          commit=$(sed -n 's/^ARG NODEGOAT_COMMIT=//p' Dockerfile)
+          echo "value=${version}-${commit:0:7}" >> "$GITHUB_OUTPUT"
+
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+
+      - uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
+        if: github.event_name != 'pull_request'
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: ${{ github.event_name != 'pull_request' }}
+          provenance: false
+          tags: ghcr.io/mitsurutech/nodegoat:${{ steps.version.outputs.value }}
+
+      - name: Check the site's code and its dependencies are in place
+        run: docker run --rm --platform linux/amd64 --entrypoint node "ghcr.io/mitsurutech/nodegoat:${{ steps.version.outputs.value }}" -e "require('/home/node/app/node_modules/mongodb'); require('/home/node/app/node_modules/express'); console.log('ok')"
+        if: github.event_name != 'pull_request'

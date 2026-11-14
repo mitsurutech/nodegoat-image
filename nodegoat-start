@@ -1,0 +1,18 @@
+#!/bin/sh
+# Starts NodeGoat the way its own docker-compose.yml does: load the seed data into MongoDB with
+# the project's artifacts/db-reset.js (trying again each second until MongoDB answers), then
+# start the site. MONGODB_URI and PORT are read by NodeGoat's config/env/all.js.
+set -eu
+cd /home/node/app
+tries=0
+until node artifacts/db-reset.js >/tmp/db-reset.log 2>&1; do
+  tries=$((tries + 1))
+  if [ "$tries" -ge 120 ]; then
+    cat /tmp/db-reset.log >&2
+    echo "nodegoat-start: MongoDB at ${MONGODB_URI} did not answer in 120 seconds" >&2
+    exit 1
+  fi
+  sleep 1
+done
+echo "nodegoat-start: seed data loaded"
+exec node server.js
