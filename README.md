@@ -1,5 +1,7 @@
 # OWASP NodeGoat container image: a deliberately vulnerable Node.js app, built from source
 
+[English](README.md) | [Français](README.fr.md) | [Español](README.es.md) | [日本語](README.ja.md) | [Deutsch](README.de.md)
+
 A multi-architecture Docker image of **OWASP NodeGoat**, the Node.js and Express web application that is insecure on purpose, for learning the OWASP Top 10 in a Node.js code base: server-side JavaScript injection, NoSQL injection in MongoDB, broken authentication and sessions, cross-site scripting, insecure direct object references, missing access control, CSRF, vulnerable components, an open redirect and ReDoS. It is published at **`ghcr.io/mitsurutech/owasp-nodegoat`** for `linux/amd64` and `linux/arm64`.
 
 > **NodeGoat is vulnerable by design.** Run it only on a machine and a network you control, never publish its port to the internet, and never put real data in it.
